@@ -2,8 +2,20 @@
 var theDeck = [];
 var playerHand =[];
 var dealerHand = [];
+var bank = 100;
+var betAmount = 0;
 
 $(document).ready(function(){
+    $('.bet').click(function(){
+        var newAmount = Number($(this).attr("value"));
+        betAmount += newAmount;
+        if (betAmount > bank){
+            alert("Sorry bum, you don't have enough cash to make that bet!");
+            betAmount = bank;
+        }
+        $('.bet-amount-number').html(betAmount);
+    });
+
     $('.deal-button').click(function(){
         createDeck(); //Run a function that creates an array of 1h-13c
         shuffleDeck();  //Shuffle the deck
@@ -15,7 +27,6 @@ $(document).ready(function(){
         placeCard('player', 'two', theDeck[2]);
         calculateTotal(playerHand, 'player');
         calculateFirstTotal(dealerHand, 'dealer');
-        console.log(calculateFirstTotal(dealerHand, 'dealer'));
     });
 
     $('.hit-button').click(function(){
@@ -50,10 +61,10 @@ $(document).ready(function(){
                 counter++;
                 if(counter == dealerHand.length){
                     var placeinDeck = counter + 8;
+                    placeCard('dealer', slot[counter - 2], theDeck[placeinDeck]);
                 }
             }
             dealerHand.push(theDeck[placeinDeck]);
-            placeCard('dealer', slot[counter - 2], theDeck[placeinDeck]);
             dealerTotal = calculateTotal(dealerHand, 'dealer'); 
         }
         calculateTotal(dealerHand, 'dealer'); 
@@ -61,10 +72,38 @@ $(document).ready(function(){
     });
 });
 
-function placeCard(who, where, cardToPlace){
-    var classSelector = '.'+who+'-cards .card-'+where
-    $(classSelector).html(cardToPlace);
-
+function placeCard(who, where, card){
+    var classSelector = '.'+who+'-cards .card-'+where;
+    var axisX = 0;
+    var axisY = 0;
+    var suitValue;
+    var cardValue = card.slice(0, -1);
+    if(card.length == 3){
+        suitValue = card.slice(2);
+    }else{
+        suitValue = card.slice(1);
+    }
+        if(cardValue == 2){
+            axisX = -45;
+        }else if(cardValue > 10){
+            axisX = -46 - (76 * (cardValue - 2));
+        }else if(cardValue > 2){
+            axisX = -45 - (76 * (cardValue - 2));
+        }else{
+            axisX = -958;
+        }
+        if(suitValue == 'd'){
+            axisY = -27;
+        }else if(suitValue == 'c'){
+            axisY = -133;
+        }else if(suitValue == 'h'){
+            axisY = -240;
+        }else{
+            axisY = -347;
+        }
+    $(classSelector).css("background-image", "url('images/card-deck.jpeg')");
+    $(classSelector).css("background-size", "1151px");
+    $(classSelector).css("background-position", axisX + "px " + axisY + "px");
 }
 
 function createDeck(){
@@ -109,28 +148,27 @@ function calculateFirstTotal(hand, whosTurn){
 function calculateTotal(hand, whosTurn){
     var total = 0;
     var cardValue = 0;
+    var hasAce = false;
     // Total Calculation
     for(i=0; i<hand.length; i++){
         cardValue = Number(hand[i].slice(0, -1));
-        if(cardValue > 10 && cardValue < 13){
+        if(cardValue == 1 && (total + 11) <= 21){
+            cardValue = 11;
+            hasAce = true;
+        }else if(cardValue > 10){
             cardValue = 10;
-        }else if(cardValue == 13){
-            cardValue = 0;
-            if(total > 21){
-                cardValue = 1;
-            }else{
-                cardValue = 11;
-            }
+        }else if((cardValue + total) > 21 && hasAce){
+            total -= 10;
+            hasAce = false;
         }
         total += cardValue;
-        }
     };
     // Update the html
     var totalId = '.' + whosTurn + '-total-number';
     $(totalId).html(total);
     //Instant Win message!
     if(whosTurn === 'player' && total === 21){
-        $('#message').html('Blackjack!! You win!<br><button class="reset-button">Reset</button>');
+        $('#message').html('Blackjack!! You win!<br><button class="reset-button" onclick="restart()">Reset</button>');
     };
     return total;
 }
@@ -144,24 +182,78 @@ function checkWin(){
     }else{
         if(playerHas > dealerHas){
             //Player won
-            $('#message').html('You have beaten the dealer!<br><button class="reset-button">Reset</button>');
+            $('#message').html('You have beaten the dealer!<br><button class="reset-button" onclick="restart()">Reset</button>');
+            bet('win');
+            $('button').one("click", function(){
+                
+            });
+
         }else if(dealerHas > playerHas){
             //Dealer won
-            $('#message').html('Sorry, the dealer has beaten you!<br><button class="reset-button">Reset</button>');
-
+            $('#message').html('Sorry, the dealer has beaten you!<br><button class="reset-button" onclick="restart()">Reset</button>');
+            bet('lose');
+            $('button').one("click", function(){
+                
+            });
         }else{
             //Tie
-            $('#message').html('It\'s a push!!<br><button class="reset-button">Reset</button>');
+            $('#message').html('It\'s a push!!<br><button class="reset-button" onclick="restart()">Reset</button>');
+            bet('push');
+            $('button').one("click", function(){
+                
+            });
         }
     }
 };
 
 function bust(who){
     if(who === 'player'){
-        $('#message').html('You have busted!<br><button class="reset-button">Reset</button>');
+        $('#message').html('You have busted!<br><button class="reset-button" onclick="restart()">Reset</button>');
+        bet('lose');
+        $('button').one("click", function(){
+            
+        });
     }else{
         // It has to be the dealer
-        $('#message').html('The dealer has busted!<br><button class="reset-button">Reset</button>');
-    };
+        $('#message').html('The dealer has busted!<br><button class="reset-button" onclick="restart()">Reset</button>');
+        bet('win');
+        $('button').one("click", function(){
+            
+        });
+    }
 };
 
+function restart(){
+    theDeck = [];
+    playerHand =[];
+    dealerHand = [];
+    // $('.dealer-total-number').empty();
+    // $('.player-total-number').empty();
+    calculateTotal(playerHand, 'player');
+    calculateTotal(dealerHand, 'dealer');
+    // $('.card').empty();
+    $('.card').css('background-image', 'url("images/cardback2.jpg")');
+    $('.card').css('background-size', '100%');
+    $('.card').css('background-position', '');
+    $('#message').html('');
+}
+
+function bet(outcome){
+    if(outcome == 'lose'){
+        bank -= betAmount;
+    }else if(outcome == 'win'){
+        bank += betAmount;
+    }else if(outcome == 'blackjack'){
+        var newBet = betAmount * 1.5;
+        bank += newBet;
+    }else{
+        bank = bank;
+    }
+    if(bank == 0){
+        alert('Go home you\'re drunk and out of money');
+    }
+
+    $('.bank-total-number').html(bank);
+    betAmount = 0;
+    $('.bet-amount-number').html(betAmount);
+}

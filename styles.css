@@ -1,3 +1,8 @@
+button:active{
+    transform: translateX(4px) translateY(4px);
+}
+
+
 #message{
     text-align: center;
     font-size: 18px;
@@ -22,13 +27,13 @@
     border-radius: 5px;
 }
 
-.dealer-hand-wrapper, .player-hand-wrapper{
+.dealer-hand-wrapper, .player-hand-wrapper, .betting-wrapper{
     color: white;
     font-size: 18px;
     text-align: center;
 }
 
-.dealer-total-number, .player-total-number{
+.dealer-total-number, .player-total-number, .bank-total-number, .bet-amount-number{
     display: block;
     text-align: center;
 }
@@ -40,20 +45,35 @@
     border-radius: 5px;
 }
 
-.player-cards .card-one{
-    background-image: url('images/card-deck.jpg');
-    background-size: 810%;
-    background-position: -24px -30px;
+.bet-buttons button{
+    width: 80px;
+    background-image: url('images/chips.png');
+    border-radius: 50%;
+    height: 80px;
+    border: none;
+    background-size: 705%;
 }
 
-.player-cards .card-two{
-    background-image: url('images/card-deck.jpg');
-    background-size: 810%;
-    background-position: -100px -30px;
+.bet-5{
+    background-position: -233px -127px;
 }
 
-.player-cards .card-three{
-    background-image: url('images/card-deck.jpg');
-    background-size: 810%;
-    background-position: -24px -138px;
+.bet-10{
+    background-position: -329px -127px;
+}
+
+.bet-25{
+    background-position: -41px -224px;
+}
+
+.bet-50{
+    background-position: -137px -224px;
+}
+
+.bet-100{
+    background-position: -233px -224px;
+}
+
+.bet{
+    box-shadow: 12px 3px 44px 6px #38433a;
 }
