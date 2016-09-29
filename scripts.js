@@ -6,6 +6,7 @@ var bank = 100;
 var betAmount = 0;
 
 $(document).ready(function(){
+    // A function that dynamically sets the value of each possible bet
     $('.bet').click(function(){
         var newAmount = Number($(this).attr("value"));
         betAmount += newAmount;
@@ -16,6 +17,7 @@ $(document).ready(function(){
         $('.bet-amount-number').html(betAmount);
     });
 
+    // Sets what will happen when we click the deal function
     $('.deal-button').on('click', function(e){
         if (betAmount == 0){
             alert('Please Choose A Bet Amount!')
@@ -35,6 +37,7 @@ $(document).ready(function(){
         }
     });
 
+    // Button defines the functionality of the "hit"
     $('.hit-button').on('click', function(e){
         if (betAmount == 0){
             alert('Please Choose A Bet Amount!')
@@ -58,6 +61,7 @@ $(document).ready(function(){
         }
     });
 
+    // Button function tells the computer that you are done playing and are ready for the outcome
     $('.stand-button').click(function(){
         var dealerTotal = calculateTotal(dealerHand, 'dealer');
         var counter = 0;
@@ -81,6 +85,7 @@ $(document).ready(function(){
     });
 });
 
+// Function that places the random cards and also gets the proper card picture from the spritesheet
 function placeCard(who, where, card){
     var classSelector = '.'+who+'-cards .card-'+where;
     var axisX = 0;
@@ -115,6 +120,7 @@ function placeCard(who, where, card){
     $(classSelector).css("background-position", axisX + "px " + axisY + "px");
 }
 
+// Dynamically creates all 52 cards
 function createDeck(){
     // Fill the deck with 
     // - 52 cards:
@@ -128,6 +134,7 @@ function createDeck(){
     }
 }
 
+// Shuffles the previously created deck
 function shuffleDeck(){
     for (var i = 1; i < 1000; i++) {
         card1 = Math.floor(Math.random() * theDeck.length);
@@ -138,6 +145,7 @@ function shuffleDeck(){
     }
 }
 
+// Calculates the total of the inital draw
 function calculateFirstTotal(hand, whosTurn){
     var total = 0;
     var cardValue = 0;
@@ -154,6 +162,7 @@ function calculateFirstTotal(hand, whosTurn){
     return total;
 }
 
+// continues to calculate the totals for both the player and dealer's hand
 function calculateTotal(hand, whosTurn){
     var total = 0;
     var cardValue = 0;
@@ -182,6 +191,7 @@ function calculateTotal(hand, whosTurn){
     return total;
 }
 
+// Checks to see who has come out victoriously
 function checkWin(){
     var playerHas = Number($('.player-total-number').html());
     var dealerHas = Number($('.dealer-total-number').html());
@@ -205,6 +215,7 @@ function checkWin(){
     }
 };
 
+// If you overdraw you've busted!  This checks for that
 function bust(who){
     if(who === 'player'){
         $('#message').html('You have busted!<br><button class="reset-button" onclick="restart()">Reset</button>');
@@ -212,8 +223,7 @@ function bust(who){
         $('button').one("click", function(){
             
         });
-    }else{
-        // It has to be the dealer
+    }else{  // It has to be the dealer
         $('#message').html('The dealer has busted!<br><button class="reset-button" onclick="restart()">Reset</button>');
         bet('win');
         $('button').one("click", function(){
@@ -222,6 +232,7 @@ function bust(who){
     }
 };
 
+// restarts the game
 function restart(){
     theDeck = [];
     playerHand =[];
@@ -253,6 +264,7 @@ function restart(){
     $('#message').html('');
 }
 
+//Decides what happens with your bet amount depending on the outcome of the round
 function bet(outcome){
     if(outcome == 'lose'){
         bank -= betAmount;
