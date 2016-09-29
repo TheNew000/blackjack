@@ -1,6 +1,6 @@
 #BlackJack game using jQuery & Javascript (styled with Bootstrap)
 
-The game has three primary buttons:  deal hit and stand.  Notice how the buttons become disabled once the game reaches a point in which their functionality is no longer needed/allowed.  But the real reason I have highlighted this project is because of the algorithm I created to display the correct card on the sprite sheet!  I have included a snippet of the sprite sheet to give you perspective but you can always check it out [inside this repo.](../blob/master/images/card-deck.jpeg)
+The game has three primary buttons:  deal hit and stand.  Notice how the buttons become disabled once the game reaches a point in which their functionality is no longer needed/allowed.  But the real reason I have highlighted this project is because of the algorithm I created to display the correct card on the sprite sheet!  I have included a snippet of the sprite sheet to give you perspective but you can always check it out [inside this repo.](../master/images/card-deck.jpeg)
 
 ![alt text](images/SS.png "A snippet of the card sprite sheet")
 
