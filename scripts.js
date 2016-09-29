@@ -16,9 +16,13 @@ $(document).ready(function(){
         $('.bet-amount-number').html(betAmount);
     });
 
-    $('.deal-button').click(function(){
+    $('.deal-button').on('click', function(e){
+        if (betAmount == 0){
+            alert('Please Choose A Bet Amount!')
+        }else{
         createDeck(); //Run a function that creates an array of 1h-13c
         shuffleDeck();  //Shuffle the deck
+
         playerHand.push(theDeck[0], theDeck[2]);
         dealerHand.push(theDeck[1], theDeck[3]);
         placeCard('player', 'one', theDeck[0]);
@@ -27,27 +31,32 @@ $(document).ready(function(){
         placeCard('player', 'two', theDeck[2]);
         calculateTotal(playerHand, 'player');
         calculateFirstTotal(dealerHand, 'dealer');
+        $('.deal-button').off(e);   
+        }
     });
 
-    $('.hit-button').click(function(){
-        var slot = ['three', 'four', 'five', 'six', 'seven'];
-        var playerDeckLength = 0;
-        for (var i = 0; i < playerHand.length; i++) {
-            playerDeckLength++;
-            if(playerDeckLength == playerHand.length){ 
-                var placeinDeck = playerDeckLength + 2;
-                console.log(placeinDeck);
+    $('.hit-button').on('click', function(e){
+        if (betAmount == 0){
+            alert('Please Choose A Bet Amount!')
+        }else{
+            var slot = ['three', 'four', 'five', 'six', 'seven'];
+            var playerDeckLength = 0;
+            for (var i = 0; i < playerHand.length; i++) {
+                playerDeckLength++;
+                if(playerDeckLength == playerHand.length){ 
+                    var placeinDeck = playerDeckLength + 2;
+                    console.log(placeinDeck);
+                }
+            }
+            playerHand.push(theDeck[placeinDeck]);
+            placeCard('player', slot[playerDeckLength - 2], theDeck[placeinDeck]);
+            var newTotal = calculateTotal(playerHand, 'player');
+            if(newTotal > 21){
+                bust('player');
+                $('.hit-button').off(e);
             }
         }
-        playerHand.push(theDeck[placeinDeck]);
-        placeCard('player', slot[playerDeckLength - 2], theDeck[placeinDeck]);
-        var newTotal = calculateTotal(playerHand, 'player');
-        if(newTotal > 21){
-            bust('player');
-        }
     });
-
-
 
     $('.stand-button').click(function(){
         var dealerTotal = calculateTotal(dealerHand, 'dealer');
@@ -88,19 +97,19 @@ function placeCard(who, where, card){
         }else if(cardValue > 10){
             axisX = -46 - (76 * (cardValue - 2));
         }else if(cardValue > 2){
-            axisX = -45 - (76 * (cardValue - 2));
+            axisX = -46 - (76 * (cardValue - 2));
         }else{
             axisX = -958;
         }
-        if(suitValue == 'd'){
-            axisY = -27;
-        }else if(suitValue == 'c'){
-            axisY = -133;
-        }else if(suitValue == 'h'){
-            axisY = -240;
-        }else{
-            axisY = -347;
-        }
+            if(suitValue == 'd'){
+                axisY = -27;
+            }else if(suitValue == 'c'){
+                axisY = -133;
+            }else if(suitValue == 'h'){
+                axisY = -240;
+            }else{
+                axisY = -348;
+            }
     $(classSelector).css("background-image", "url('images/card-deck.jpeg')");
     $(classSelector).css("background-size", "1151px");
     $(classSelector).css("background-position", axisX + "px " + axisY + "px");
@@ -168,7 +177,7 @@ function calculateTotal(hand, whosTurn){
     $(totalId).html(total);
     //Instant Win message!
     if(whosTurn === 'player' && total === 21){
-        $('#message').html('Blackjack!! You win!<br><button class="reset-button" onclick="restart()">Reset</button>');
+        $('#message').html('Blackjack!! You win!<br><button class="reset-button" onclick="location.reload()">Reset</button>');
     };
     return total;
 }
@@ -184,24 +193,14 @@ function checkWin(){
             //Player won
             $('#message').html('You have beaten the dealer!<br><button class="reset-button" onclick="restart()">Reset</button>');
             bet('win');
-            $('button').one("click", function(){
-                
-            });
-
         }else if(dealerHas > playerHas){
             //Dealer won
             $('#message').html('Sorry, the dealer has beaten you!<br><button class="reset-button" onclick="restart()">Reset</button>');
             bet('lose');
-            $('button').one("click", function(){
-                
-            });
         }else{
             //Tie
             $('#message').html('It\'s a push!!<br><button class="reset-button" onclick="restart()">Reset</button>');
             bet('push');
-            $('button').one("click", function(){
-                
-            });
         }
     }
 };
@@ -227,10 +226,26 @@ function restart(){
     theDeck = [];
     playerHand =[];
     dealerHand = [];
-    // $('.dealer-total-number').empty();
-    // $('.player-total-number').empty();
+    console.log(bank);
+    if (bank == 0) {
+        alert('Go home you\'re drunk and out of money');
+        bank = 100;
+        $('.bank-total-number').html(bank);
+    }
     calculateTotal(playerHand, 'player');
     calculateTotal(dealerHand, 'dealer');
+    $('.deal-button').one('click', function(){
+        createDeck(); //Run a function that creates an array of 1h-13c
+        shuffleDeck();  //Shuffle the deck   
+        playerHand.push(theDeck[0], theDeck[2]);
+        dealerHand.push(theDeck[1], theDeck[3]);
+        placeCard('player', 'one', theDeck[0]);
+        placeCard('dealer', 'one', theDeck[1]);
+        placeCard('player', 'two', theDeck[2]);
+        calculateTotal(playerHand, 'player');
+        calculateFirstTotal(dealerHand, 'dealer');
+    });
+
     // $('.card').empty();
     $('.card').css('background-image', 'url("images/cardback2.jpg")');
     $('.card').css('background-size', '100%');
@@ -248,9 +263,6 @@ function bet(outcome){
         bank += newBet;
     }else{
         bank = bank;
-    }
-    if(bank == 0){
-        alert('Go home you\'re drunk and out of money');
     }
 
     $('.bank-total-number').html(bank);
